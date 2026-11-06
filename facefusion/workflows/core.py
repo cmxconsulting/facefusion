@@ -1,14 +1,16 @@
-from typing import List
+from functools import partial
+from types import ModuleType
+from typing import List, Tuple
 
 import numpy
 
-from facefusion import logger, process_manager, state_manager, translator
+from facefusion import logger, process_manager, state_manager, translator, vr180
 from facefusion.audio import create_empty_audio_frame, get_audio_frame, get_voice_frame
 from facefusion.common_helper import get_first
 from facefusion.filesystem import filter_audio_paths
 from facefusion.processors.core import get_processors_modules
 from facefusion.temp_helper import clear_temp_directory, create_temp_directory
-from facefusion.types import AudioFrame, ErrorCode, VisionFrame
+from facefusion.types import AudioFrame, ErrorCode, Mask, VisionFrame
 from facefusion.vision import conditional_merge_vision_mask, detect_video_fps, extract_vision_mask, read_static_image, read_static_images, read_static_video_frame, resolve_extract_frame_number, resolve_target_frame_number, restrict_trim_frame, restrict_video_fps, select_video_frames
 
 
@@ -81,17 +83,29 @@ def process_temp_frame(target_vision_frames : List[VisionFrame], temp_vision_fra
 	source_audio_frame = conditional_get_source_audio_frame(frame_number)
 	source_voice_frame = conditional_get_source_voice_frame(frame_number)
 	temp_vision_mask = extract_vision_mask(temp_vision_frame)
+	temp_vision_frame = temp_vision_frame[:, :, :3]
+	processor_modules = get_processors_modules(state_manager.get_item('processors'))
 
-	for processor_module in get_processors_modules(state_manager.get_item('processors')):
-		temp_vision_frame, temp_vision_mask = processor_module.process_frame(
-		{
-			'reference_vision_frame': reference_vision_frame,
-			'source_vision_frames': source_vision_frames,
-			'source_audio_frame': source_audio_frame,
-			'source_voice_frame': source_voice_frame,
-			'target_vision_frames': target_vision_frames,
-			'temp_vision_frame': temp_vision_frame[:, :, :3],
-			'temp_vision_mask': temp_vision_mask
-		})
+	def run_processors(modules : List[ModuleType], view_vision_frame : VisionFrame, view_vision_mask : Mask, view_target_vision_frames : List[VisionFrame]) -> Tuple[VisionFrame, Mask]:
+		for processor_module in modules:
+			view_vision_frame, view_vision_mask = processor_module.process_frame(
+			{
+				'reference_vision_frame': reference_vision_frame,
+				'source_vision_frames': source_vision_frames,
+				'source_audio_frame': source_audio_frame,
+				'source_voice_frame': source_voice_frame,
+				'target_vision_frames': view_target_vision_frames,
+				'temp_vision_frame': view_vision_frame[:, :, :3],
+				'temp_vision_mask': view_vision_mask
+			})
+		return view_vision_frame, view_vision_mask
+
+	if vr180.is_enabled():
+		face_modules = [ processor_module for processor_module in processor_modules if not vr180.is_frame_processor(processor_module) ]
+		frame_modules = [ processor_module for processor_module in processor_modules if vr180.is_frame_processor(processor_module) ]
+		temp_vision_frame, temp_vision_mask = vr180.process_frame(temp_vision_frame, temp_vision_mask, target_vision_frames, partial(run_processors, face_modules))
+		temp_vision_frame, temp_vision_mask = run_processors(frame_modules, temp_vision_frame, temp_vision_mask, target_vision_frames)
+	else:
+		temp_vision_frame, temp_vision_mask = run_processors(processor_modules, temp_vision_frame, temp_vision_mask, target_vision_frames)
 
 	return conditional_merge_vision_mask(temp_vision_frame, temp_vision_mask)

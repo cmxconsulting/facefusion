@@ -146,6 +146,8 @@ LOCALES : Locales =\
 			'output_video_fps': 'specify the video fps based on the target video',
 			'workflow_mode': 'detect or enforce the workflow mode',
 			'workflow_strategy': 'process the temporary frames in memory or on disk',
+			'vr180_projection': 'reproject each face of a VR180 video to a flat view before processing',
+			'vr180_layout': 'specify how the eyes of the VR180 video are arranged',
 			'processors': 'load a single or multiple processors (choices: {choices}, ...)',
 			'background-remover-model': 'choose the model responsible for removing the background',
 			'background-remover-color': 'apply red, green blue and alpha values of the background',

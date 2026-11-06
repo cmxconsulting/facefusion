@@ -63,6 +63,8 @@ def apply_args(args : Args, apply_state_item : ApplyStateItem) -> None:
 
 	apply_state_item('workflow_mode', args.get('workflow_mode'))
 	apply_state_item('workflow_strategy', args.get('workflow_strategy'))
+	apply_state_item('vr180_projection', args.get('vr180_projection'))
+	apply_state_item('vr180_layout', args.get('vr180_layout'))
 	available_processors = [ get_file_name(file_path) for file_path in resolve_file_paths('facefusion/processors/modules') ]
 	apply_state_item('processors', args.get('processors'))
 

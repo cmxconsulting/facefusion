@@ -66,6 +66,8 @@ LocalePoolSet : TypeAlias = Dict[str, Locales]
 
 WorkflowMode = Literal['auto', 'image-to-image', 'image-to-video']
 WorkflowStrategy = Literal['disk', 'memory']
+Vr180Projection = Literal['none', 'equirect', 'fisheye']
+Vr180Layout = Literal['sbs', 'tb', 'mono']
 
 CameraCaptureSet : TypeAlias = Dict[str, cv2.VideoCapture]
 CameraPoolSet = TypedDict('CameraPoolSet',
@@ -378,6 +380,8 @@ StateKey = Literal\
 	'output_video_fps',
 	'workflow_mode',
 	'workflow_strategy',
+	'vr180_projection',
+	'vr180_layout',
 	'processors',
 	'open_browser',
 	'ui_layouts',
@@ -451,6 +455,8 @@ State = TypedDict('State',
 	'output_video_fps' : float,
 	'workflow_mode' : WorkflowMode,
 	'workflow_strategy' : WorkflowStrategy,
+	'vr180_projection' : Vr180Projection,
+	'vr180_layout' : Vr180Layout,
 	'processors' : List[str],
 	'open_browser' : bool,
 	'ui_layouts' : List[str],

@@ -209,6 +209,15 @@ def create_workflow_program() -> ArgumentParser:
 	return program
 
 
+def create_vr180_program() -> ArgumentParser:
+	program = ArgumentParser(add_help = False)
+	group_vr180 = program.add_argument_group('vr180')
+	group_vr180.add_argument('--vr180-projection', help = translator.get('help.vr180_projection'), default = config.get_str_value('vr180', 'vr180_projection', 'none'), choices = facefusion.choices.vr180_projections)
+	group_vr180.add_argument('--vr180-layout', help = translator.get('help.vr180_layout'), default = config.get_str_value('vr180', 'vr180_layout', 'sbs'), choices = facefusion.choices.vr180_layouts)
+	job_store.register_step_keys([ 'vr180_projection', 'vr180_layout' ])
+	return program
+
+
 def create_processors_program() -> ArgumentParser:
 	program = ArgumentParser(add_help = False)
 	available_processors = [ get_file_name(file_path) for file_path in resolve_file_paths('facefusion/processors/modules') ]
@@ -309,7 +318,7 @@ def create_step_index_program() -> ArgumentParser:
 
 
 def collect_step_program() -> ArgumentParser:
-	return ArgumentParser(parents = [ create_face_detector_program(), create_face_landmarker_program(), create_face_selector_program(), create_face_tracker_program(), create_face_masker_program(), create_voice_extractor_program(), create_frame_extraction_program(), create_frame_distribution_program(), create_output_creation_program(), create_workflow_program(), create_processors_program() ], add_help = False)
+	return ArgumentParser(parents = [ create_face_detector_program(), create_face_landmarker_program(), create_face_selector_program(), create_face_tracker_program(), create_face_masker_program(), create_voice_extractor_program(), create_frame_extraction_program(), create_frame_distribution_program(), create_output_creation_program(), create_workflow_program(), create_vr180_program(), create_processors_program() ], add_help = False)
 
 
 def collect_job_program() -> ArgumentParser:

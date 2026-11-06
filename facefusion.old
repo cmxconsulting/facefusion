@@ -1,0 +1,74 @@
+[general]
+source_paths =
+target_path =
+output_path =
+
+[misc]
+force_download = True
+skip_download =
+headless =
+log_level = debug
+
+[execution]
+execution_device_id =
+execution_providers = coreml cpu
+execution_thread_count = 128
+execution_queue_count = 2
+
+[memory]
+video_memory_strategy =
+system_memory_limit =
+
+[face_analyser]
+face_analyser_order = best-worst
+face_analyser_age = adult
+face_analyser_gender = female
+face_detector_model = yoloface
+face_detector_size = 320x320
+face_detector_score = 0.7
+face_landmarker_score =
+
+[face_selector]
+face_selector_mode =
+reference_face_position =
+reference_face_distance = 0.8
+reference_frame_number =
+
+[face_mask]
+face_mask_types =
+face_mask_blur =
+face_mask_padding =
+face_mask_regions =
+
+[frame_extraction]
+trim_frame_start = 151000
+trim_frame_end = 152000
+temp_frame_format =
+keep_temp = True
+
+[output_creation]
+output_image_quality = 80
+output_image_resolution =
+output_video_encoder = libx265
+output_video_preset = ultrafast
+output_video_quality = 80
+output_video_resolution = 30
+output_video_fps =
+skip_audio =
+
+[frame_processors]
+frame_processors = face_swapper
+face_debugger_items =
+face_enhancer_model = codeformer
+face_enhancer_blend =
+face_swapper_model = inswapper_128
+frame_colorizer_model =
+frame_colorizer_blend =
+frame_colorizer_size =
+frame_enhancer_model =
+frame_enhancer_blend =
+lip_syncer_model =
+
+[uis]
+open_browser =
+ui_layouts =
